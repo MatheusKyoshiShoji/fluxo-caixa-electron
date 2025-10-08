@@ -1,14 +1,7 @@
 import React from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
-
-interface Transaction {
-  id: number;
-  data: string;
-  descricao: string;
-  tipo: "entrada" | "saida";
-  valor: number;
-  status: string;
-}
+import { formatCurrencyBRL, formatDateBR } from "../utils/formatValues.ts";
+import { Transaction } from "src/types/transaction.js";
 
 interface TransactionsChartProps {
   transacoes: Transaction[];
@@ -46,14 +39,14 @@ const TransactionsChart: React.FC<TransactionsChartProps> = ({ transacoes }) => 
 
   // Determine color: green if saldo final >= 0, else red
   const finalSaldo = data.length ? data[data.length - 1].saldo : 0;
-  const lineColor = finalSaldo >= 0 ? "#22c55e" : "#ef4444"; // Tailwind green/red
+  const lineColor = finalSaldo >= 0 ? "#22c55e" : "#ef4444";
 
   return (
-    <ResponsiveContainer width="100%" height={250}>
-      <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" />
-        <YAxis />
+    <ResponsiveContainer width="100%" height={300}>
+      <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3"/>
+        <XAxis dataKey="date" tickFormatter={formatDateBR}/>
+        <YAxis tickFormatter={formatCurrencyBRL} />
         <Tooltip />
         <Line
           type="monotone"

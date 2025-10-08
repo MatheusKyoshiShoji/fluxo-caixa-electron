@@ -1,3 +1,5 @@
+import { formatCurrencyBRL } from "../utils/formatValues";
+
 const TransactionList = ({transacoes}: { transacoes: any[]}) => {
 if (!transacoes.length) return <p className="text-center text-gray-500">Nenhuma transação ainda.</p>;
 
@@ -20,7 +22,7 @@ if (!transacoes.length) return <p className="text-center text-gray-500">Nenhuma 
                 <td className={`border p-2 ${t.tipo === 'entrada' ? 'text-green-600' : 'text-red-600'}`}>
                 {t.tipo}
                 </td>
-                <td className="border p-2">{t.valor.toFixed(2)}</td>
+                <td className="border p-2">{formatCurrencyBRL(t.valor)}</td>
                 <td className={`border p-2 ${t.status === 'pago' ? 'text-green-600' : 'text-red-600'}`}>
                 {t.status}
                 </td>
