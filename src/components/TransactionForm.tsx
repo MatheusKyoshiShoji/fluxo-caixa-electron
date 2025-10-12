@@ -23,7 +23,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-black">
       <input
         type="text"
         placeholder="Descrição"

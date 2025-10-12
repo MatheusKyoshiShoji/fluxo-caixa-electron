@@ -15,7 +15,6 @@ interface FinancePageProps {
 const FinancePage = ({ transactions, setTransactions }: FinancePageProps) => {
   const [modalOpen, setModalOpen] = useState(false);
 
-
   const [viewType, setViewType] = useState<"monthly" | "yearly">("yearly");
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
@@ -106,7 +105,7 @@ const FinancePage = ({ transactions, setTransactions }: FinancePageProps) => {
         selectedYear={selectedYear}
       />
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-        <h2 className="text-xl font-bold mb-4">Nova Transação</h2>
+        <h2 className="text-xl font-bold mb-4 text-black">Nova Transação</h2>
         <TransactionForm onSubmit={handleAddTransaction} />
       </Modal>
     </>
