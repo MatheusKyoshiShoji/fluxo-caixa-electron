@@ -27,7 +27,7 @@ function calculateCurrentRevenue(transactions: Transaction[]) {
 
 function calculateBalance(transactions: Transaction[]) {
   let balance = 0;
-  transactions.forEach((t) => {
+  transactions.filter((t) => t.status === 'pago').forEach((t) => {
     if (t.tipo === "entrada") {
       balance += t.valor;
     } else {
@@ -43,16 +43,21 @@ const ResumeRevenue: React.FC<CurrentRevenueProps> = ({
 
   const { receitas, despesas } = calculateCurrentRevenue(transactions);
   const balance = calculateBalance(transactions);
+  const expectedBalance = calculateBalance(transactions) - despesas;
 
   return (
     <div className="bg-slate-800 p-4 rounded-lg col-span-1">
       <div className="flex flex-col gap-4">
         <div className="w-full flex justify-between bg-slate-700 p-4 rounded-lg">
-          <h3 className="text-2xl font-bold">Saldo </h3>
+          <h3 className="text-2xl font-bold">Saldo Real </h3>
           <span className="text-2xl font-semibold">{formatCurrencyBRL(balance)}</span>
         </div>
+        <div className="w-full flex justify-between bg-slate-700 p-4 rounded-lg">
+          <h3 className="text-2xl font-bold">Saldo Esperado </h3>
+          <span className="text-2xl font-semibold">{formatCurrencyBRL(expectedBalance)}</span>
+        </div>
         <div className="mt-2 p-4 rounded-lg bg-slate-700">
-          <h3 className="text-2xl font-bold mb-2">Resumo do Mês</h3>
+          <h3 className="text-2xl font-bold mb-2">Expectativa do Mês</h3>
           <ul>
             <li>
               <span className="text-green-700 font-semibold"> Receitas: </span>

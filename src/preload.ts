@@ -7,4 +7,6 @@ import { Transaction } from './types/transaction';
 contextBridge.exposeInMainWorld('api', {
   getTransactions: () => ipcRenderer.invoke('get-transactions'),
   addTransaction: (transaction: Transaction) => ipcRenderer.invoke('add-transaction', transaction),
+  removeTransaction: (id: number) => ipcRenderer.invoke('remove-transaction', id),
+  updateTransaction: (id: number, updatedFields: Partial<Transaction>) => ipcRenderer.invoke('update-transaction', id, updatedFields),
 });

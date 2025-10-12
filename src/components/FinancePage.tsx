@@ -18,11 +18,36 @@ const FinancePage = ({ transactions, setTransactions }: FinancePageProps) => {
   const [viewType, setViewType] = useState<"monthly" | "yearly">("yearly");
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
-  const handleAddTransaction = (data: any) => {
-    window.api.addTransaction(data).then(() => {
-      window.api.getTransactions().then(setTransactions);
-    });
-    setModalOpen(false);
+  const handleAddTransaction = async (data: Transaction) => {
+    try {
+      await window.api.addTransaction(data);
+      const updated = await window.api.getTransactions();
+      setTransactions(updated);
+    } catch (err) {
+      console.error("Erro ao salvar transação", err);
+    } finally {
+      setModalOpen(false);
+    }
+  };
+
+  const handleRemoveTransaction = async (id: number) => {
+    try {
+      await window.api.removeTransaction(id);
+      const updated = await window.api.getTransactions();
+      setTransactions(updated);
+    } catch (err) {
+      console.error("Erro ao remover transação", err);
+    }
+  };
+
+  const handleEditTransaction = async (updated: Transaction) => {
+    try {
+      await window.api.updateTransaction(updated.id, updated);
+      const refreshed = await window.api.getTransactions();
+      setTransactions(refreshed);
+    } catch (err) {
+      console.error("Erro ao editar transação", err);
+    }
   };
 
   const yearlyData = useMemo(() => {
@@ -52,7 +77,7 @@ const FinancePage = ({ transactions, setTransactions }: FinancePageProps) => {
     transactions
       .filter((t) => new Date(t.data).getFullYear() === selectedYear)
       .forEach((t) => {
-        const month = new Date(t.data).getMonth(); // 0 = Janeiro
+        const month = new Date(t.data).getUTCMonth(); // 0 = Janeiro
         if (!grouped[month]) {
           grouped[month] = {
             date: new Date(selectedYear, month).toLocaleString("pt-BR", {
@@ -96,7 +121,7 @@ const FinancePage = ({ transactions, setTransactions }: FinancePageProps) => {
       </div>
       <Dashboard transacoes={transactions} />
       <h2 className="text-3xl mt-8 font-bold"> Transaçãoes </h2>
-      <TransactionList transacoes={transactions} onRemove={id => setTransactions(transactions.filter(t => t.id !== id))} />
+      <TransactionList transacoes={transactions} onRemove={id => handleRemoveTransaction(id)} onEdit={handleEditTransaction}/>
       <h2 className="text-3xl mt-8 font-bold"> Breakdown de Transações </h2>
       <TransactionBreakdown
         periods={viewType === "yearly" ? yearlyData : monthlyData}

@@ -7,6 +7,8 @@ declare global {
         api: {
             getTransactions: () => Promise<Transaction[]>;
             addTransaction: (transaction: Transaction) => Promise<void>;
+            removeTransaction: (id: number) => Promise<void>;
+            updateTransaction: (id: number, updatedFields: Partial<Transaction>) => Promise<void>;
         }
     }
 }

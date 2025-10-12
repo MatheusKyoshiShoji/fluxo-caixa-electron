@@ -24,3 +24,13 @@ export function addTransaction(transaction: Transaction) {
     VALUES (@data, @descricao, @tipo, @valor, @status)
   `).run(transaction);
 }
+
+export function removeTransaction(id: number) {
+  db.prepare('DELETE FROM transactions WHERE id = ?').run(id);
+}
+
+export function updateTransaction(id: number, updatedFields: Partial<Transaction>) {
+  const fields = Object.keys(updatedFields).map(key => `${key} = @${key}`).join(', ');
+  const stmt = db.prepare(`UPDATE transactions SET ${fields} WHERE id = @id`);
+  stmt.run({ ...updatedFields, id });
+}
