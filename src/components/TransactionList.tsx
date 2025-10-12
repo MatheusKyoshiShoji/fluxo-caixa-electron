@@ -1,5 +1,5 @@
 import { Transaction } from "src/types/transaction";
-import { formatCurrencyBRL } from "../utils/formatValues";
+import { formatCurrencyBRL, formatDateBR } from "../utils/formatValues";
 
 interface TransactionListProps {
   transacoes: Transaction[];
@@ -29,7 +29,7 @@ const TransactionList = ({ transacoes, onRemove }: TransactionListProps) => {
           {transacoes.map((t) => (
             <tr key={t.id} className="hover:bg-slate-700 transition">
               <td className="border-b border-slate-600 py-3 pl-2">
-                {new Date(t.data).toLocaleDateString()}
+                {formatDateBR(t.data)}
               </td>
               <td className="border-b border-slate-600 py-3 pl-2 capitalize">
                 {t.descricao}
