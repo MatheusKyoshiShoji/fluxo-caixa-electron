@@ -19,7 +19,9 @@ const FinancePage = ({ transactions, setTransactions }: FinancePageProps) => {
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
   const handleAddTransaction = (data: any) => {
-    setTransactions([...transactions, { ...data, id: transactions.length + 1 }]);
+    window.api.addTransaction(data).then(() => {
+      window.api.getTransactions().then(setTransactions);
+    });
     setModalOpen(false);
   };
 

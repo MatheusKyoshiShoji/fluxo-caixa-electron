@@ -1,34 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FinancePage from "./components/FinancePage";
 import { Transaction } from "src/types/transaction";
 
 const App = () => {
-    const [transactions, setTransactions] = useState<Transaction[]>([
-      {
-        id: 1,
-        data: "2025-10-01",
-        descricao: "Salário",
-        tipo: "entrada",
-        valor: 5000.0,
-        status: "pago",
-      },
-      {
-        id: 2,
-        data: "2025-10-04",
-        descricao: "Compras",
-        tipo: "saida",
-        valor: 400.0,
-        status: "pago",
-      },
-      {
-        id: 3,
-        data: "2025-10-30",
-        descricao: "IPTU",
-        tipo: "saida",
-        valor: 250.0,
-        status: "A pagar",
-      },
-    ]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    window.api.getTransactions().then(setTransactions);
+  }, []);
 
   return (
     <>
