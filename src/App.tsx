@@ -12,14 +12,14 @@ const App = () => {
   return (
     <>
       <header className="w-full">
-        <nav className="bg-blue-950 p-4 w-full flex justify-between items-center">
+{/*         <nav className="bg-blue-950 p-4 w-full flex justify-between items-center">
           <h1 className="text-indigo-50 text-4xl">Fluxo de Caixa JS</h1>
           <ul className="flex gap-4 text-indigo-50 text-lg">
             <li> Finanças </li>
             <li> Vendas </li>
             <li> Contatos </li>
           </ul>
-        </nav>
+        </nav> */}
       </header>
       <main className="bg-slate-900 text-white w-full p-4">
         <FinancePage transactions={transactions} setTransactions={setTransactions}/>

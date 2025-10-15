@@ -1,6 +1,6 @@
 import { Transaction } from "src/types/transaction";
 import { formatCurrencyBRL, formatDateBR } from "../utils/formatValues";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface TransactionListProps {
   transacoes: Transaction[];
@@ -11,6 +11,42 @@ interface TransactionListProps {
 const TransactionList = ({ transacoes, onRemove, onEdit }: TransactionListProps) => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState<Partial<Transaction>>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filterViewType, setFilterViewType] = useState<"monthly" | "yearly">("monthly");
+  const [filterYear, setFilterYear] = useState<number>(new Date().getFullYear());
+  const [filterMonth, setFilterMonth] = useState<number>(new Date().getMonth() + 1);
+  const [filterTipo, setFilterTipo] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<string>("");
+
+  const pageSize = 10;
+  const years = useMemo(() =>
+    Array.from(new Set(transacoes.map(t => new Date(t.data).getFullYear()))), [transacoes]);
+  const months = useMemo(() =>
+    Array.from(new Set(
+      transacoes
+        .filter(t => new Date(t.data).getFullYear() === filterYear)
+        .map(t => new Date(t.data).getMonth() + 1)
+    )), [transacoes, filterYear]);
+
+  const filteredTransacoes = useMemo(() => {
+    return transacoes.filter(t => {
+      const tDate = new Date(t.data);
+      const tYear = tDate.getFullYear();
+      const tMonth = tDate.getMonth() + 1;
+      let match = true;
+      if (filterViewType === "monthly") {
+        match = match && tYear === filterYear && tMonth === filterMonth;
+      } else {
+        match = match && tYear === filterYear;
+      }
+      if (filterTipo) match = match && t.tipo === filterTipo;
+      if (filterStatus) match = match && t.status === filterStatus;
+      return match;
+    });
+  }, [transacoes, filterViewType, filterYear, filterMonth, filterTipo, filterStatus]);
+
+  const totalPages = Math.ceil(filteredTransacoes.length / pageSize);
+  const paginatedTransacoes = filteredTransacoes.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   if (!transacoes.length) {
     return (
@@ -37,7 +73,55 @@ const TransactionList = ({ transacoes, onRemove, onEdit }: TransactionListProps)
   }
 
   return (
-    <div className="bg-slate-800 p-4 rounded-lg mt-8 w-full">
+    <div className="bg-slate-800 p-4 rounded-lg mt-8 w-full h-[65vh] overflow-y-auto scrollbar-hidden">
+      <div className="flex flex-wrap gap-4 mb-4 items-center float-end">
+        <select
+          value={filterViewType}
+          onChange={e => setFilterViewType(e.target.value as "monthly" | "yearly")}
+          className="bg-slate-700 text-white px-2 py-1 rounded"
+        >
+          <option value="monthly">Mensal</option>
+          <option value="yearly">Anual</option>
+        </select>
+        <select
+          value={filterYear}
+          onChange={e => setFilterYear(Number(e.target.value))}
+          className="bg-slate-700 text-white px-2 py-1 rounded"
+        >
+          {years.map(year => (
+            <option key={year} value={year}>{year}</option>
+          ))}
+        </select>
+        {filterViewType === "monthly" && (
+          <select
+            value={filterMonth}
+            onChange={e => setFilterMonth(Number(e.target.value))}
+            className="bg-slate-700 text-white px-2 py-1 rounded"
+          >
+            {months.map(month => (
+              <option key={month} value={month}>{month.toString().padStart(2, "0")}</option>
+            ))}
+          </select>
+        )}
+        <select
+          value={filterTipo}
+          onChange={e => setFilterTipo(e.target.value)}
+          className="bg-slate-700 text-white px-2 py-1 rounded"
+        >
+          <option value="">Todos os Tipos</option>
+          <option value="entrada">Entrada</option>
+          <option value="saida">Saída</option>
+        </select>
+        <select
+          value={filterStatus}
+          onChange={e => setFilterStatus(e.target.value)}
+          className="bg-slate-700 text-white px-2 py-1 rounded"
+        >
+          <option value="">Todos os Status</option>
+          <option value="A pagar">A pagar</option>
+          <option value="pago">Pago</option>
+        </select>
+      </div>
       <table className="w-full mt-2 text-left">
         <thead>
           <tr>
@@ -50,7 +134,7 @@ const TransactionList = ({ transacoes, onRemove, onEdit }: TransactionListProps)
           </tr>
         </thead>
         <tbody>
-          {transacoes.map((t) => (
+          {paginatedTransacoes.map((t) => (
             <tr key={t.id} className={` ${editingId === t.id ? "" : "hover:bg-slate-700"}  transition`}>
               {editingId === t.id ? (
                 <>
@@ -150,6 +234,23 @@ const TransactionList = ({ transacoes, onRemove, onEdit }: TransactionListProps)
           ))}
         </tbody>
       </table>
+      <div className="flex justify-center items-center gap-2 mt-4">
+        <button
+          className="px-3 py-1 rounded bg-slate-700 text-white disabled:opacity-50"
+          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+        >
+          Anterior
+        </button>
+        <span className="text-white">{currentPage} de {totalPages}</span>
+        <button
+          className="px-3 py-1 rounded bg-slate-700 text-white disabled:opacity-50"
+          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages}
+        >
+          Próxima
+        </button>
+      </div>
     </div>
   );
 };
