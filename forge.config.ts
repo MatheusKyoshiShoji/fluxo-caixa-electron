@@ -6,12 +6,21 @@ import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    prune: true,
+    ignore: (file: string) => {
+      if (!file) return false;
+      const keep = file.startsWith('/.vite') || (file.startsWith('/node_modules'));
+      return !keep;
+    }
   },
-  rebuildConfig: {},
+  rebuildConfig: {
+    force: true,
+  },
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}, ['darwin']),
@@ -44,6 +53,7 @@ const config: ForgeConfig = {
     }),
     // Fuses are used to enable/disable various Electron functionality
     // at package time, before code signing the application
+    new AutoUnpackNativesPlugin({}),
     new FusesPlugin({
       version: FuseVersion.V1,
       [FuseV1Options.RunAsNode]: false,
