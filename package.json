@@ -1,7 +1,7 @@
 {
   "name": "fluxo-caixa-electron",
   "productName": "fluxo-caixa-electron",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Aplicativo desktop para controle de fluxo de caixa.",
   "main": ".vite/build/main.js",
   "scripts": {
