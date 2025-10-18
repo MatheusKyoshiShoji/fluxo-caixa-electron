@@ -1,32 +1,36 @@
 name: Release
 
 on:
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
-  publish:
+  build-and-publish:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout do repositório
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Instalar dependências
         run: npm ci
 
-      - name: Build renderer (Vite) and package
+      - name: Reconstruir módulos nativos para Electron
+        run: npm run rebuild
+
+      - name: Build e empacotar aplicação Electron
         run: npm run make
         env:
           CI: true
 
-      - name: Publish with electron-forge
-        run: npx electron-forge publish --platform=all
+      - name: Publicar release no GitHub
+        run: npx electron-forge publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
