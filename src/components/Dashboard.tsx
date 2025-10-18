@@ -2,17 +2,18 @@ import { useState } from "react";
 import CurrentRevenue from "./ResumeRevenue";
 import TransactionsChart from "./TransactionsChart";
 import UpcomingTransactions from "./UpcomingTransactions";
+import { parseISODate } from "../utils/formatValues";
 
 const Dashboard = ({ transacoes }: { transacoes: any[] }) => {
     const now = new Date();
     const [selectedYear, setSelectedYear] = useState(now.getFullYear());
     const [selectedMonth, setSelectedMonth] = useState(now.getMonth() + 1);
 
-    const years = Array.from(new Set(transacoes.map(t => new Date(t.data).getFullYear())));
+    const years = Array.from(new Set(transacoes.map(t => parseISODate(t.data).getFullYear())));
     const months = Array.from(new Set(
         transacoes
-            .filter(t => new Date(t.data).getFullYear() === selectedYear)
-            .map(t => new Date(t.data).getMonth() + 1)
+            .filter(t => parseISODate(t.data).getFullYear() === selectedYear)
+            .map(t => parseISODate(t.data).getMonth() + 1)
     ));
 
     return (
