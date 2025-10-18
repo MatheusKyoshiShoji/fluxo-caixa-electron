@@ -7,6 +7,7 @@ import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
+import { PublisherGithub } from '@electron-forge/publisher-github';
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -21,6 +22,16 @@ const config: ForgeConfig = {
   rebuildConfig: {
     force: true,
   },
+  publishers: [
+    new PublisherGithub({
+      repository: {
+        owner: 'MatheusKyoshiShoji',
+        name: 'fluxo-caixa-electron',
+      },
+      prerelease: false,
+      draft: true,
+    }),
+  ],
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}, ['darwin']),
